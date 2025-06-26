@@ -12,9 +12,9 @@ jobs:
       fail-fast: false
       matrix:
         spec:
-          - { name: 'linux x86_64', runner: ubuntu-22.04 }
-          - { name: 'macOS x86_64', runner: macos-14 }
-          - { name: 'Windows x86_64', runner: windows-2019 }
+          - { name: 'linux x86_64', runner: ubuntu-latest }
+          - { name: 'macOS x86_64', runner: macos-latest }
+          - { name: 'Windows x86_64', runner: windows-latest }
     name: building ${{ matrix.spec.name }}
     runs-on: ${{ matrix.spec.runner }}
     steps:
@@ -35,11 +35,16 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python run-tests.py
+
+      - name: Find Ziti
+        id: findziti
+        shell: bash
         run: |
-          ZITI_PATH=$(python run-tests.py | tail -n1)
-          echo "ziti_path=$ZITI_PATH" >> "$GITHUB_OUTPUT"
+          ZITI=$(find . -type f -name ziti -o -name ziti.exe | head -n1)
+          echo "ziti_path=$ZITI" >> "$GITHUB_OUTPUT"
 
       - name: Run Ziti
         shell: bash
         run: |
-          "${{ steps.ziti.outputs.ziti_path }}" --version
+          "${{ steps.findziti.outputs.ziti_path }}" --version
