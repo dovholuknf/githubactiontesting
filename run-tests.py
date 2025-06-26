@@ -104,3 +104,5 @@ def get_ziti(add_to_path: bool = False) -> str:
 
 
 get_ziti(add_to_path=False)
+
+subprocess.run([ziti_path, "--version"], check=True)

@@ -36,15 +36,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python run-tests.py
-
-      - name: Find Ziti
-        id: findziti
-        shell: bash
-        run: |
-          ZITI=$(find "$HOME" -type f \( -name ziti -o -name ziti.exe \) -perm /u+x | head -n1)
-          echo "ziti_path=$ZITI" >> "$GITHUB_OUTPUT"
-
-      - name: Run Ziti
-        shell: bash
-        run: |
-          "${{ steps.findziti.outputs.ziti_path }}" --version
