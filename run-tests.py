@@ -124,8 +124,6 @@ def wait_for_controller(host: str = "127.0.0.1", port: int = 1280, timeout: int 
         time.sleep(3)
     raise TimeoutError(f"timeout waiting for https://{host}:{port}")
 
-
-
 ziti_path = get_ziti(add_to_path=False)
 print("💥 running version check...", flush=True)
 subprocess.run([ziti_path, "--version"], check=True, stdout=sys.stdout, stderr=sys.stderr)
@@ -138,5 +136,9 @@ try:
     print("✅ controller is up", flush=True)
 finally:
     proc.terminate()
-    proc.wait(timeout=10)
-    print("🛑 quickstart terminated", flush=True)
+    try:
+        proc.wait(timeout=10)
+        print("🛑 quickstart terminated cleanly", flush=True)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        print("🧨 quickstart force killed after timeout", flush=True)
