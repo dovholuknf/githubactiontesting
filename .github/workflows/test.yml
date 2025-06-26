@@ -41,7 +41,7 @@ jobs:
         id: findziti
         shell: bash
         run: |
-          ZITI=$(find . -type f -name ziti -o -name ziti.exe | head -n1)
+          ZITI=$(find "$HOME" -type f \( -name ziti -o -name ziti.exe \) -perm /u+x | head -n1)
           echo "ziti_path=$ZITI" >> "$GITHUB_OUTPUT"
 
       - name: Run Ziti
