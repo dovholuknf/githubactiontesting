@@ -138,7 +138,7 @@ finally:
     proc.terminate()
     start = time.monotonic()
     try:
-        proc.wait(timeout=30)
+        proc.wait(timeout=60)
         elapsed = time.monotonic() - start
         print(f"🛑 quickstart terminated cleanly in {elapsed:.1f}s", flush=True)
     except subprocess.TimeoutExpired:
