@@ -101,8 +101,6 @@ def get_ziti(add_to_path: bool = False) -> str:
         except PermissionError:
             pass
 
-
-
-get_ziti(add_to_path=False)
-
+ziti_path = get_ziti(add_to_path=False)
 subprocess.run([ziti_path, "--version"], check=True)
+
