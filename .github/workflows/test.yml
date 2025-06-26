@@ -1,0 +1,38 @@
+name: test github action 
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test_job_1:
+    strategy:
+      fail-fast: false
+      matrix:
+        spec:
+          - { name: 'linux x86_64', runner: ubuntu-22.04 }
+          - { name: 'macOS x86_64', runner: macos-14 }
+          - { name: 'Windows x86_64', runner: windows-2019 }
+    name: building ${{ matrix.spec.name }}
+    runs-on: ${{ matrix.spec.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python Tools
+        run: python -m pip install -U pip setuptools
+
+      - name: Install Ziti
+        shell: bash
+        run: |
+          source /dev/stdin <<< "$(wget -qO- https://get.openziti.io/ziti-cli-functions.sh)"; getZiti
+
