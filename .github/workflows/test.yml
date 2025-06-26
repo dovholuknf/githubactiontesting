@@ -33,5 +33,7 @@ jobs:
 
       - name: Install Ziti
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python run-tests.py
 
