@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import json, os, platform, shutil, stat, sys, tarfile, tempfile, urllib.request as url
 
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8")
+    
 GITHUB_REPO_OWNER = os.getenv("GITHUB_REPO_OWNER", "openziti")
 GITHUB_REPO_NAME  = os.getenv("GITHUB_REPO_NAME",  "ziti")
 GITHUB_TOKEN      = os.getenv("GITHUB_TOKEN", "")
