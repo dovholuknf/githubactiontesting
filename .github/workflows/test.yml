@@ -35,5 +35,11 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python run-tests.py
+        run: |
+          ZITI_PATH=$(python run-tests.py | tail -n1)
+          echo "ziti_path=$ZITI_PATH" >> "$GITHUB_OUTPUT"
 
+      - name: Run Ziti
+        shell: bash
+        run: |
+          "${{ steps.ziti.outputs.ziti_path }}" --version
