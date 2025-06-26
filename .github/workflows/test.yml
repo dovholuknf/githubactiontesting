@@ -33,5 +33,5 @@ jobs:
 
       - name: Install Ziti
         shell: bash
-        run: run-tests.py
+        run: python run-tests.py
 
