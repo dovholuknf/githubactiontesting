@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, os, subprocess, platform, shutil, stat, sys, tarfile, tempfile, urllib.request as url
+import json, os, time, subprocess, platform, shutil, stat, sys, tarfile, tempfile, urllib.request as url
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
@@ -136,9 +136,12 @@ try:
     print("✅ controller is up", flush=True)
 finally:
     proc.terminate()
+    start = time.monotonic()
     try:
         proc.wait(timeout=30)
-        print("🛑 quickstart terminated cleanly", flush=True)
+        elapsed = time.monotonic() - start
+        print(f"🛑 quickstart terminated cleanly in {elapsed:.1f}s", flush=True)
     except subprocess.TimeoutExpired:
         proc.kill()
-        print("🧨 quickstart force killed after timeout", flush=True)
+        elapsed = time.monotonic() - start
+        print(f"🧨 quickstart force killed after {elapsed:.1f}s", flush=True)
