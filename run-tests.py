@@ -137,7 +137,7 @@ try:
 finally:
     proc.terminate()
     try:
-        proc.wait(timeout=10)
+        proc.wait(timeout=30)
         print("🛑 quickstart terminated cleanly", flush=True)
     except subprocess.TimeoutExpired:
         proc.kill()
