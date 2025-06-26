@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, os, platform, shutil, stat, sys, tarfile, tempfile, urllib.request as url
+import json, os, subprocess, platform, shutil, stat, sys, tarfile, tempfile, urllib.request as url
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
