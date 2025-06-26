@@ -102,7 +102,7 @@ def get_ziti(add_to_path: bool = False) -> str:
             pass
 
 ziti_path = get_ziti(add_to_path=False)
+print("💥 running version check...", flush=True)
 subprocess.run([ziti_path, "--version"], check=True, stdout=sys.stdout, stderr=sys.stderr)
-
-print(f"✅ subprocess was ran{ziti_path}")
+print("✅ done", flush=True)
 
