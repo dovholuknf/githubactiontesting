@@ -3,7 +3,7 @@ import json, os, platform, shutil, stat, sys, tarfile, tempfile, urllib.request 
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
-    
+
 GITHUB_REPO_OWNER = os.getenv("GITHUB_REPO_OWNER", "openziti")
 GITHUB_REPO_NAME  = os.getenv("GITHUB_REPO_NAME",  "ziti")
 GITHUB_TOKEN      = os.getenv("GITHUB_TOKEN", "")
@@ -45,15 +45,13 @@ def _verify_version(vtag):
 def get_ziti(add_to_path: bool = False) -> str:
     """Download & extract ziti; return path to binary, with progress output."""
     override = os.getenv("ZITI_VERSION_OVERRIDE")
-    tag, tar_name = (_verify_version(override) if override else _latest_version())
-    print(f"🔍 using tag={tag}  archive={tar_name}")
+    tag, archive = (_verify_version(override) if override else _latest_version())
+    print(f"🔍 using tag={tag}  archive={archive}")
 
     zhome = os.getenv("ZITI_HOME", os.path.expanduser("~/.ziti"))
-    zbin  = os.getenv("ZITI_BIN_DIR",
-                      os.path.join(zhome, "ziti-bin", f"ziti-{tag}"))
-    ziti_path = os.path.join(zbin, "ziti")
+    zbin = os.getenv("ZITI_BIN_DIR", os.path.join(zhome, "ziti-bin", f"ziti-{tag}"))
+    ziti_path = os.path.join(zbin, "ziti.exe" if sys.platform == "win32" else "ziti")
 
-    # already present?
     if os.path.isfile(ziti_path):
         print(f"✅ existing ziti at {ziti_path}")
         if add_to_path and zbin not in os.getenv("PATH", ""):
@@ -66,7 +64,7 @@ def get_ziti(add_to_path: bool = False) -> str:
 
     url_file = (
         f"https://github.com/{GITHUB_REPO_OWNER}/{GITHUB_REPO_NAME}"
-        f"/releases/download/{tag}/{tar_name}"
+        f"/releases/download/{tag}/{archive}"
     )
     print(f"⬇️  downloading {url_file}")
     tmp = tempfile.NamedTemporaryFile(delete=False)
@@ -76,16 +74,19 @@ def get_ziti(add_to_path: bool = False) -> str:
         print("✔️  download complete")
 
         print("📦 extracting …")
-        with tarfile.open(tmp.name) as t:
-            member = next(
-                m for m in t.getmembers()
-                if m.name.endswith("/ziti") or m.name == "ziti"
-            )
-            t.extract(member, path=zbin if member.name == "ziti"
-                      else os.path.join(zbin, "tmp"))
-            if "/" in member.name:
-                shutil.move(os.path.join(zbin, "tmp", member.name), ziti_path)
-                shutil.rmtree(os.path.join(zbin, "tmp"))
+        if sys.platform == "win32":
+            import zipfile
+            with zipfile.ZipFile(tmp.name) as z:
+                z.extractall(zbin)
+        else:
+            with tarfile.open(tmp.name) as t:
+                member = next(m for m in t.getmembers()
+                              if m.name.endswith("/ziti") or m.name == "ziti")
+                t.extract(member, path=zbin if member.name == "ziti"
+                          else os.path.join(zbin, "tmp"))
+                if "/" in member.name:
+                    shutil.move(os.path.join(zbin, "tmp", member.name), ziti_path)
+                    shutil.rmtree(os.path.join(zbin, "tmp"))
         os.chmod(ziti_path, os.stat(ziti_path).st_mode | stat.S_IEXEC)
         print(f"✅ extracted to {ziti_path}")
 
@@ -95,7 +96,11 @@ def get_ziti(add_to_path: bool = False) -> str:
 
         return ziti_path
     finally:
-        os.unlink(tmp.name)
+        try:
+            os.unlink(tmp.name)
+        except PermissionError:
+            pass
+
 
 
 get_ziti(add_to_path=False)
