@@ -101,16 +101,14 @@ def get_ziti(add_to_path: bool = False) -> str:
         except PermissionError:
             pass
 
-def start_ziti_quickstart(ziti_path: str, home: str | None = None,
-                          log_file: str = "quickstart.log") -> subprocess.Popen:
+def start_ziti_quickstart(ziti_path: str, home: str | None = None, log_file: str = "quickstart.log") -> subprocess.Popen:
     cmd = [ziti_path, "edge", "quickstart"]
     if home:
         cmd += ["--home", home]
     log = open(log_file, "w")
     return subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT)
 
-def wait_for_controller(host: str = "127.0.0.1", port: int = 1280,
-                        timeout: int = 60) -> None:
+def wait_for_controller(host: str = "127.0.0.1", port: int = 1280, timeout: int = 60) -> None:
     import time, ssl, http.client
     ctx = ssl._create_unverified_context()
     end = time.time() + timeout
@@ -131,11 +129,14 @@ def wait_for_controller(host: str = "127.0.0.1", port: int = 1280,
 ziti_path = get_ziti(add_to_path=False)
 print("💥 running version check...", flush=True)
 subprocess.run([ziti_path, "--version"], check=True, stdout=sys.stdout, stderr=sys.stderr)
-print("✅ done", flush=True)
+print("✅ version check done", flush=True)
 
+print("💥 starting ziti quickstart...", flush=True)
 proc = start_ziti_quickstart(ziti_path)
 try:
     wait_for_controller()
+    print("✅ controller is up", flush=True)
 finally:
     proc.terminate()
     proc.wait(timeout=10)
+    print("🛑 quickstart terminated", flush=True)
