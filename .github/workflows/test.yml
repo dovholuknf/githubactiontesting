@@ -16,4 +16,4 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run test script with bool param
-        run: powershell -Command ".\test-bool.ps1 -Flag \$true"
+        run: powershell -Command "& './test-bool.ps1' -Flag \$true"
