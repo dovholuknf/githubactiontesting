@@ -9,7 +9,7 @@ permissions:
 jobs:
   test_job_1:
     name: building ${{ matrix.spec.name }}
-    runs-on: ${{ windows-latest }}
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
