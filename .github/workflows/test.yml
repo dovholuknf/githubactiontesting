@@ -17,7 +17,7 @@ jobs:
 
       - name: Download Ziti Edge Tunnel
         run: |
-          curl -sL https://github.com/openziti/ziti-tunnel-sdk-c/releases/latest/download/ziti-edge-tunnel-linux.zip \
+          curl -sL https://github.com/openziti/ziti-tunnel-sdk-c/releases/latest/download/ziti-edge-tunnel-Linux_x86_64.zip \
             -o zet.zip && \
           unzip zet.zip && chmod +x ziti-edge-tunnel
 
@@ -29,4 +29,4 @@ jobs:
         run: |
           ./ziti-edge-tunnel run -i id.json &
           sleep 5
-          nc -vz $ZITI_SERVICE 80 || true
+          timeout 10s nc -vz $ZITI_SERVICE 80 || true
