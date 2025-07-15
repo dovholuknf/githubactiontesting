@@ -27,6 +27,6 @@ jobs:
 
       - name: Run ZET and dial
         run: |
-          ./ziti-edge-tunnel run -i id.json &
+          sudo ./ziti-edge-tunnel run -i id.json &
           sleep 5
           timeout 10s nc -vz $ZITI_SERVICE 80 || true
