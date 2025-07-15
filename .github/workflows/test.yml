@@ -29,4 +29,4 @@ jobs:
         run: |
           sudo ./ziti-edge-tunnel run -i id.json &
           sleep 5
-          timeout 10s nc -vz $ZITI_SERVICE 80 || true
+          timeout 10s curl -sk https://mgmt.ziti:8441 || true
