@@ -1,20 +1,32 @@
-name: test github action 
-on:
-  push:
-  pull_request:
+name: Dial via ZET
 
-permissions:
-  contents: read
+on:
+  workflow_dispatch:
 
 jobs:
-  test_job_1:
-    name: building ${{ matrix.spec.name }}
-    runs-on: windows-latest
+  dial-ziti-service:
+    runs-on: ubuntu-latest
+    env:
+      ZITI_IDENTITY_JSON: ${{ secrets.ZITI_IDENTITY_JSON }}
+      ZITI_SERVICE: "your.service.name"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Run test script with bool param
-        shell: pwsh
-        run: ./test.ps1 -Flag:$true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && \
+          sudo apt-get install -y unzip curl jq
+
+      - name: Download Ziti Edge Tunnel
+        run: |
+          curl -sL https://github.com/openziti/ziti-tunnel-sdk-c/releases/latest/download/ziti-edge-tunnel-linux.zip \
+            -o zet.zip && \
+          unzip zet.zip && chmod +x ziti-edge-tunnel
+
+      - name: Write identity file
+        run: |
+          echo "$ZITI_IDENTITY_JSON" > id.json
+
+      - name: Run ZET and dial
+        run: |
+          ./ziti-edge-tunnel run -i id.json &
+          sleep 5
+          nc -vz $ZITI_SERVICE 80 || true
